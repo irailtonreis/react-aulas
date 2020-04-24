@@ -25,16 +25,17 @@ import {formatPrice} from '../../utils/format';
     this.setState({products: data})
   }
 
-  handleAddProduct = product => {
+  handleAddProduct = id => {
     const { addToCart } = this.props;
 
-    addToCart(product);
+    addToCart(id);
   }
 
 
  render(){
 
   const { products} = this.state;
+  const { amount } = this.props;
   return (
     <ProductList>
       {products.map(product => (
@@ -47,10 +48,10 @@ import {formatPrice} from '../../utils/format';
       <span>{product.priceFormatted}</span>
 
          <button type="button"
-          onClick={()=> this.handleAddProduct(product)}
+          onClick={()=> this.handleAddProduct(product.id)}
          >
            <div>
-             <MdAddShoppingCart size={36} color="#FFF" />3
+             <MdAddShoppingCart size={36} color="#FFF" />{amount[product.id] || 0}
            </div>
            <span>ADICIONAR AO CARRINHO</span>
          </button>
@@ -63,6 +64,13 @@ import {formatPrice} from '../../utils/format';
  }
 }
 
+const mapStateToProps = state => ({
+  amount: state.cart.reduce((amount, product) => {
+    amount[product.id] = product.amount;
+    return amount
+  }, {})
+});
+
 const mapDispatchToProps = dispatch =>
   bindActionCreators(CartActions, dispatch);
-export default connect(null, mapDispatchToProps)(Home);
+export default connect(mapStateToProps, mapDispatchToProps)(Home);
