@@ -26,9 +26,9 @@ import {formatPrice} from '../../utils/format';
   }
 
   handleAddProduct = id => {
-    const { addToCart } = this.props;
+    const { addToCartRequest } = this.props;
 
-    addToCart(id);
+    addToCartRequest(id);
   }
 
 
