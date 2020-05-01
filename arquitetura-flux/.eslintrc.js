@@ -21,7 +21,8 @@ module.exports = {
   },
   plugins: [
     'react',
-    'prettier'
+    'prettier',
+    'react-hooks'
   ],
   rules: {
     'prettier/prettier': 'error',
@@ -33,6 +34,8 @@ module.exports = {
     "react/prefer-stateless-function": "off",
     "react/state-in-constructor": "off",
     "react/no-unused-state": 'off',
-    "react/jsx-one-expression-per-line": "single-child"
+    "react/jsx-one-expression-per-line": "single-child",
+    'react-hooks/rules-of-hooks': 'error',
+    'react-hooks/exhaustive-deps': 'warn'
   },
 };

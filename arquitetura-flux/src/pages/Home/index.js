@@ -1,41 +1,39 @@
-import React, { Component} from "react";
+import React, { useState, useEffect } from "react";
 import { MdAddShoppingCart } from "react-icons/md";
 import { ProductList } from "./styles";
-import { connect } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as CartActions from '../../store/modules/cart/actions';
 import api from '../../services/api';
 import {formatPrice} from '../../utils/format';
+function Home({addToCartRequest}){
+  const amount = useSelector(state => state.cart.reduce((amount, product) => {
+    amount[product.id] = product.amount;
+    return amount
+  }, {}))
 
- class Home extends Component {
+  const [products, setProducts] = useState([]);
 
-  state = {
-    products: [],
+  useEffect(() => {
+    async function loadProdutcs(){
+      const response = await api.get('products');
 
-  }
+      const data = response.data.map(product => ({
+        ...product,
+        priceFormatted: formatPrice(product.price),
+      }))
 
-  async componentDidMount(){
-    const response = await api.get('products');
+      setProducts(data)
+    }
 
-    const data = response.data.map(product => ({
-      ...product,
-      priceFormatted: formatPrice(product.price),
-    }))
+    loadProdutcs();
+  }, []);
 
-    this.setState({products: data})
-  }
 
-  handleAddProduct = id => {
-    const { addToCartRequest } = this.props;
-
+  function handleAddProduct(id) {
     addToCartRequest(id);
   }
 
-
- render(){
-
-  const { products} = this.state;
-  const { amount } = this.props;
   return (
     <ProductList>
       {products.map(product => (
@@ -48,7 +46,7 @@ import {formatPrice} from '../../utils/format';
       <span>{product.priceFormatted}</span>
 
          <button type="button"
-          onClick={()=> this.handleAddProduct(product.id)}
+          onClick={()=> handleAddProduct(product.id)}
          >
            <div>
              <MdAddShoppingCart size={36} color="#FFF" />{amount[product.id] || 0}
@@ -61,16 +59,9 @@ import {formatPrice} from '../../utils/format';
 
     </ProductList>
   );
- }
 }
 
-const mapStateToProps = state => ({
-  amount: state.cart.reduce((amount, product) => {
-    amount[product.id] = product.amount;
-    return amount
-  }, {})
-});
 
 const mapDispatchToProps = dispatch =>
   bindActionCreators(CartActions, dispatch);
-export default connect(mapStateToProps, mapDispatchToProps)(Home);
+export default connect(null, mapDispatchToProps)(Home);
